@@ -1,0 +1,10 @@
+build
+include
+/lib/
+/bin/
+/data/
+/docs/
+/images/
+/models/
+/script/
+*.aps
