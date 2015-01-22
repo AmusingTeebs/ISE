@@ -125,9 +125,9 @@ set(ISE_DEBUG_PATH "${ISE_BIN_PATH}/Debug")
 set(ISE_RELEASE_PATH "${ISE_BIN_PATH}/Release")
 
 # Create variable to ISE debug executable
-set(ISE_DEBUG_EXE "${ISE_DEBUG_PATH}/ISEModule.exe")
+set(ISE_DEBUG_EXE "${ISE_DEBUG_PATH}/ISE.exe")
 # Create variable to ISE release executable
-set(ISE_RELEASE_EXE "${ISE_RELEASE_PATH}/ISEModule.exe")
+set(ISE_RELEASE_EXE "${ISE_RELEASE_PATH}/ISE.exe")
 
 # Generate the user profile containing debug information
 configure_file("${TEMPLATE_PATH}/visual_studio_2010.vcxproj.user" "${PROJECT_BINARY_DIR}/${PROJECT_NAME}.vcxproj.user" NEWLINE_STYLE WIN32)

@@ -15,3 +15,4 @@ project(ISECore)
 
 # Add each of the associated projects
 add_subdirectory(ISE)
+add_subdirectory(GameViewer)

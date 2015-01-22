@@ -4,8 +4,7 @@
 //Our 2d viewer
 #include "qgraphicsscene.h"
 
-
-ISEBegin
+GameViewerBegin
   GameViewer::GameViewer(QMainWindow *window)
   : QGraphicsView(window)
 {
@@ -25,4 +24,4 @@ ISEBegin
   setScene(scene);
 }
 
-ISEEnd
+GameViewerEnd

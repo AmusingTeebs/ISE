@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ISEExports.h"
+#include "GameViewerExports.h"
 #include "qmainwindow.h"
 #include "qgraphicsview.h"
-ISEBegin
-class GameViewer : public QGraphicsView
+GameViewerBegin
+class GameViewerAPI GameViewer : public QGraphicsView
 {
 public:
   /** Constructor */
   GameViewer(QMainWindow *window);
 };
-ISEEnd
+GameViewerEnd

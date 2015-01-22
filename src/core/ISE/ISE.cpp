@@ -1,6 +1,9 @@
 // Project
 #include "ISE.h"
 
+// Viewer
+#include "GameViewer.h"
+
 //Interface junk
 #include "qmainwindow.h"
 #include "qdockwidget.h"
@@ -38,16 +41,18 @@ void ISE::initialize(QApplication *application)
   window->resize(2200,1600);
   window->showMaximized();
   setBackground(window);
-
+  
+  //Create the 2d Renderer for ISE
+  GameViewer_space::GameViewer *viewer = new GameViewer_space::GameViewer(window);
+  window->setCentralWidget(viewer);
+  
   // Adding some dock widgets to the window. Is for fun.
   QDockWidget *widget;
-  for(int i = 0; i < 10; i++)
+  for(int i = 0; i < 4; i++)
   {
     widget = new QDockWidget(0);
+    widget->setWindowTitle("DockWidget: " + QString::number(i));
     window->addDockWidget(Qt::RightDockWidgetArea, widget);
   }
-
-  //Set the background to this image
-  widget->setStyleSheet("background-image:nothing;");
 }
 ISEEnd
