@@ -13,7 +13,7 @@ file(GLOB PROJECT_SOURCES *.cpp)
 
 # Set the include directories
 include_directories(${INCLUDE_DIR} ${SPECTR_INCLUDE})
-  
+   
 # Add the header and source files 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES} ${PROJECT_HEADERS})
  

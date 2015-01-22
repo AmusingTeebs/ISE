@@ -3,13 +3,16 @@
 
 // Viewer
 #include "GameViewer.h"
+#include "Scroll.h"
 
 //Interface junk
 #include "qmainwindow.h"
 #include "qdockwidget.h"
 #include "qpixmap.h"
 #include "qdir.h"
+#include "qgraphicsitem.h"
 
+using namespace GameViewer_space; // Ask me about this
 ISEBegin
   ISE::ISE()
 {
@@ -43,9 +46,9 @@ void ISE::initialize(QApplication *application)
   setBackground(window);
   
   //Create the 2d Renderer for ISE
-  GameViewer_space::GameViewer *viewer = new GameViewer_space::GameViewer(window);
+  GameViewer *viewer = new GameViewer(window);
   window->setCentralWidget(viewer);
-  
+
   // Adding some dock widgets to the window. Is for fun.
   QDockWidget *widget;
   for(int i = 0; i < 4; i++)
