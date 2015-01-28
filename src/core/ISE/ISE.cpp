@@ -27,6 +27,8 @@ ISEBegin
 ISE::~ISE()
 {
 
+//I'm editing this on my phone through an app
+
 }
 
 void setBackground(QMainWindow* window)
