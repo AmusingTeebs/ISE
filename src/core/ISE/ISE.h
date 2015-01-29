@@ -7,12 +7,15 @@
 #include "qmainwindow.h"
 #include "qtoolbutton.h"
 #include "qlayout.h"
-
+#include "qobject.h"
 
 
 ISEBegin
-class ISEAPI ISE
+class ISE : public QObject
 {
+
+	Q_OBJECT
+
 public:
   /** Constructor */
   ISE();
@@ -22,6 +25,9 @@ public:
 
   /** Initialize ISE! */
   void initialize(QApplication *application);
+
+  void ISE::makeButtons(QLayout *layout);
+
 
 private: 
 	void createPlayerLayout(QHBoxLayout *widget);
@@ -37,6 +43,9 @@ private:
 	int firstScore, secondScore;
 
 
+public slots: 
+
+	void changeImage();
 
 };
 ISEEnd

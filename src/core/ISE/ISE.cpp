@@ -14,12 +14,17 @@
 #include "qlayout.h"
 #include "qlabel.h"
 #include "qtoolbutton.h"
+#include "qboxlayout.h"
+#include "qobject.h"
+#include "qdebug.h"
 
 
 using namespace GameViewer_space; // Ask me about this
 ISEBegin
 	ISE::ISE()
+	:QObject()
 {
+	
 	firstScore = 0;
 	secondScore = 0;
 }
@@ -45,6 +50,13 @@ void setBackground(QMainWindow* window)
 	window->setPalette(palette);
 }
 
+
+void ISE::changeImage()
+{
+	qDebug() << "ohai!";
+}
+
+
 void ISE::createPlayerLayout(QHBoxLayout *c)
 {
 	
@@ -66,21 +78,49 @@ void ISE::createPlayerLayout(QHBoxLayout *c)
 
 }
 
+
+void ISE::makeButtons(QLayout *layout)
+{
+	QToolButton *button = new QToolButton();
+			//button->setText("Button: " +QString::number(x));
+			//all unneeded now VVVV
+			//button->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextUnderIcon);
+			
+			button->setIcon(QIcon("C:/Projects/ISE/images/redx.jpg"));
+			
+			connect(button, &QToolButton::pressed, this, &ISE::changeImage);
+
+			//setting icon size to whatever the size of the button is
+			button->setIconSize(button->size());
+			button->setFixedSize(150,150);
+			layout->addWidget(button);
+}
+
+
 void ISE::createGameLayout(QHBoxLayout *x)
 {
 	//Creating a new layout for our Game
-	QHBoxLayout *gameLayout = new QHBoxLayout();
+	QVBoxLayout *gameLayout = new QVBoxLayout();
 
 	//adding the game's layout to the container
 	x->addLayout(gameLayout);
 
-	for (int x=0; x<9; x++)
+	for (int x=0; x<3; x++)
 	{
-		QToolButton *button = new QToolButton();
-		button->setText("Button: " +QString::number(x));
-		button->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextUnderIcon);
-		gameLayout->addWidget(button);
+		//creates new hbox 3 times
+		QHBoxLayout * ttLayout = new QHBoxLayout();
+
+		//adds new hbox to the gamelayout
+		gameLayout->addLayout(ttLayout);
+
+		//create & add 3 buttons, 3 times, into ttLayout
+		for (int x=0; x<3; x++)
+		{
+			makeButtons(ttLayout);
+		}
+
 	}
+
 
 
 }
@@ -98,6 +138,8 @@ void ISE::initialize(QApplication *application)
 
 	//adding the larger container to the dock widget window
 	window->setCentralWidget(container);
+
+	//creating a layout to put scores 
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	container->setLayout(mainLayout);
 
