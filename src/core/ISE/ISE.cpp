@@ -17,6 +17,8 @@
 #include "qboxlayout.h"
 #include "qobject.h"
 #include "qdebug.h"
+#include "qcoreapplication.h"
+#include "qaction.h"
 
 
 using namespace GameViewer_space; // Ask me about this
@@ -24,7 +26,7 @@ ISEBegin
 	ISE::ISE()
 	:QObject()
 {
-	
+	currentPlayer=1;
 	firstScore = 0;
 	secondScore = 0;
 }
@@ -32,7 +34,7 @@ ISEBegin
 ISE::~ISE()
 {
 
-//I'm editing this on my phone through an app
+	//I'm editing this on my phone through an app
 
 }
 
@@ -51,21 +53,18 @@ void setBackground(QMainWindow* window)
 }
 
 
-void ISE::changeImage()
-{
-	qDebug() << "ohai!";
-}
+
 
 
 void ISE::createPlayerLayout(QHBoxLayout *c)
 {
-	
+
 	QHBoxLayout *playerLayout = new QHBoxLayout();
 
 	//adding the player score layout to the container
 	c->addLayout(playerLayout);
 
-	
+
 	//added first player label & adding it to the playerLayout
 	firstLabel = new QLabel();
 	firstLabel->setText("Player 1: " + QString::number(firstScore));
@@ -82,26 +81,148 @@ void ISE::createPlayerLayout(QHBoxLayout *c)
 void ISE::makeButtons(QLayout *layout)
 {
 	QToolButton *button = new QToolButton();
-			//button->setText("Button: " +QString::number(x));
-			//all unneeded now VVVV
-			//button->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextUnderIcon);
-			
-			button->setIcon(QIcon("C:/Projects/ISE/images/redx.jpg"));
-			
-			connect(button, &QToolButton::pressed, this, &ISE::changeImage);
 
-			//setting icon size to whatever the size of the button is
-			button->setIconSize(button->size());
-			button->setFixedSize(150,150);
-			layout->addWidget(button);
+	//button->setText("Button: " +QString::number(x));
+	button->setToolButtonStyle(Qt::ToolButtonStyle::ToolButtonTextUnderIcon);
+	button->setIcon(QIcon("C:/Projects/ISE/images/background.jpg"));
+	connect(button, &QToolButton::pressed, this, &ISE::changeImage);
+
+	//setting icon size to whatever the size of the button is
+	button->setIconSize(button->size());
+	button->setFixedSize(150,150);
+	buttons.append(button);
+	layout->addWidget(button);
 }
+
+
+void ISE::changeImage()
+{
+	qDebug() << "ohai!";
+	QToolButton *button_clicked = dynamic_cast<QToolButton*>(QObject::sender());
+	
+	foreach(QToolButton *button, buttons)
+  {
+
+    if(button == button_clicked && currentPlayer == 1 && button->text() == "")
+    {
+      button->setText("x");
+      button->setIcon(QIcon("C:/Projects/ISE/images/redx.jpg"));
+	  currentPlayer = 2;
+    }
+
+    else if (button  == button_clicked && currentPlayer == 2  && button->text() == "")
+	  {
+		  button ->setText("y");
+		  button->setIcon(QIcon("C:/Projects/ISE/images/blueo.jpg"));
+		  currentPlayer = 1;
+	}
+  }
+
+	evaluate();
+
+}
+
+void ISE::evaluate()
+{
+  int winner = 0;
+  int count_1 = 0;
+  int count_2 = 0;
+  //rows
+  for(int i = 0; i < 3; i ++)
+  {
+    for( int j = 0; j < 3; j++)
+    {
+      if(grid.at(i).at(j)->text().contains("x"))
+         count_1++;
+      
+      if(grid.at(i).at(j)->text().contains("y"))
+         count_2++;
+    }
+    if(count_1 == 3)
+      winner = 1;
+    else if(count_2 == -3)
+      winner = 2;
+  }
+   count_1 = 0;
+  count_2 = 0;
+
+  //collumns
+  for(int i = 0; i < 3; i ++)
+  {
+    for( int j = 0; j < 3; j++)
+      
+    {
+          if(grid.at(i).at(j)->text().contains("x"))
+         count_1++;
+      
+      if(grid.at(i).at(j)->text().contains("y"))
+         count_2++;
+    }
+    if(count_1 == 3)
+      winner = 1;
+    else if(count_2 == -3)
+      winner = 2;
+  }
+    count_1 = 0;
+  count_2 = 0;
+
+  //diagonals
+  for(int i = 0; i < 3; i ++)
+  {
+      if( grid.at(i).at(i)->text().contains("x")) count_1++ ;
+      if( grid.at(i).at(i)->text().contains("y")) count_2++ ;
+  }
+    if(count_1 == 3)
+      winner = 1;
+    else if(count_2 == -3)
+      winner = 2;
+    count_1 = 0;
+    count_2 = 0;
+
+   //diagonals
+  for(int i = 0; i < 3; i ++)
+  {
+     if( grid.at(i).at(2-i)->text().contains("x") )
+        count_1++;
+      if( grid.at(i).at(2-i)->text().contains("y") )
+        count_2++;
+  }
+    if(count_1 == 3)
+      winner = 1;
+    else if(count_2 == -3)
+      winner = 2;
+
+  if(winner)
+  {
+    qDebug() << "Winner is planer number " + QString(winner);
+    foreach(QToolButton *button, buttons)
+    {
+      button->setText("");
+      button->setIcon(QIcon());
+    }
+  }
+}
+void ISE::makeGrid()
+{
+
+  for(int i = 0; i < 3; i++)
+  {
+    QList<QToolButton*> list;
+    for(int j = 1; j < 4; j++)
+    {
+      list.append(buttons.at(i + (j)));
+    }
+    grid.append(list);
+  }
+}
+
 
 
 void ISE::createGameLayout(QHBoxLayout *x)
 {
 	//Creating a new layout for our Game
 	QVBoxLayout *gameLayout = new QVBoxLayout();
-
+	
 	//adding the game's layout to the container
 	x->addLayout(gameLayout);
 
@@ -127,12 +248,13 @@ void ISE::createGameLayout(QHBoxLayout *x)
 
 void ISE::initialize(QApplication *application)
 {
-	
+
 	//Create the window screen for the program
 	window = new QMainWindow();
-	window->resize(1600,1200);
-	window->showMaximized();
-	
+	window->resize(1300,800);
+	window->setStyleSheet("color: purple");
+	window->show();
+
 	//creating widget called container to hold game&score
 	QWidget *container = new QWidget();
 
@@ -142,10 +264,9 @@ void ISE::initialize(QApplication *application)
 	//creating a layout to put scores 
 	QHBoxLayout *mainLayout = new QHBoxLayout();
 	container->setLayout(mainLayout);
-
 	createPlayerLayout(mainLayout);
 	createGameLayout(mainLayout);
-
+	makeGrid();
 
 }
 ISEEnd

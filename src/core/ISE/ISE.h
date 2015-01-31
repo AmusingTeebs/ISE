@@ -10,6 +10,8 @@
 #include "qobject.h"
 
 
+
+
 ISEBegin
 class ISE : public QObject
 {
@@ -40,7 +42,13 @@ private:
 
 	QMainWindow *window;
 
-	int firstScore, secondScore;
+	int firstScore, secondScore, currentPlayer;
+
+	void makeGrid();
+
+	void evaluate();
+
+	QList< QList<QToolButton*> > grid;
 
 
 public slots: 
