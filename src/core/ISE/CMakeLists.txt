@@ -9,13 +9,13 @@ ISEFindQt()
   
 # Add all header and source files to the project
 file(GLOB PROJECT_HEADERS *.h)  
-file(GLOB PROJECT_SOURCES *.cpp) 
-  
+file(GLOB PROJECT_SOURCES *.cpp)  
+   
 # Create separate directory for resource files 
 file(GLOB PROJECT_RESOURCES *.rc) 
 source_group("Resource Files" FILES ${PROJECT_RESOURCES})
 
-# Set the include directories
+# Set the include directories 
 include_directories(${INCLUDE_DIR} ${ISE_INCLUDE} GameViewer)
 
 # Add the executable 

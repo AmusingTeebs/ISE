@@ -19,10 +19,34 @@
 #include "qdebug.h"
 #include "qcoreapplication.h"
 #include "qaction.h"
-
+#include "qdialog.h"
+#include <QXmlStreamReader>
+#include "qtextedit.h"
+#include "qfile.h"
+#include "Bible.h"
+#include "GameScreen.h"
+#include "qsettings.h"
+#include "qpushbutton.h"
 
 using namespace GameViewer_space; // Ask me about this
 ISEBegin
+
+  QString ISE::isePath(const QString &name)
+{
+  // Get the executable location
+  QDir dir(QCoreApplication::applicationDirPath());
+  dir.cdUp();
+  dir.cdUp();
+
+  return dir.absolutePath() + QDir::separator() + name;
+}
+
+QString ISE::DataPath(const QString &name)
+{
+  QString sep = QDir::separator();
+  return isePath("data" + sep + name);
+}
+
 	ISE::ISE()
 	:QObject()
 {
@@ -38,6 +62,40 @@ ISE::~ISE()
 
 }
 
+void ISE::popup()
+{
+
+}
+
+void ISE::start()
+{  
+
+}
+
+void ISE::findVerse()
+{
+  QString text = dynamic_cast<QTextEdit*>(QObject::sender())->toPlainText();
+  if(text.isEmpty())
+    return;
+  QStringList values = text.split(" ");
+  if(values.size() < 3)
+    return;
+  result->setPlainText(Bible::Instance()->find(values.at(0), values.at(1), values.at(2)));
+}
+
+void ISE::parseBible(const QString &path)
+{
+  QFile file(path);
+  if(!file.open(QIODevice::ReadOnly| QIODevice::Text))
+    return;
+
+  QXmlStreamReader xml(&file);
+
+  Bible::Instance()->load(xml);
+
+  Bible::Instance()->find("Genis","1","2");
+}
+
 void setBackground(QMainWindow* window)
 {
 	//Don't worry about this function... just getting a image and setting it to the background.
@@ -51,9 +109,6 @@ void setBackground(QMainWindow* window)
 	palette.setBrush(QPalette::Background, background);
 	window->setPalette(palette);
 }
-
-
-
 
 
 void ISE::createPlayerLayout(QHBoxLayout *c)
@@ -74,7 +129,6 @@ void ISE::createPlayerLayout(QHBoxLayout *c)
 	secondLabel = new QLabel();
 	secondLabel->setText("Player 2: "+QString::number(secondScore));
 	playerLayout->addWidget(secondLabel);
-
 }
 
 
@@ -202,6 +256,7 @@ void ISE::evaluate()
     }
   }
 }
+
 void ISE::makeGrid()
 {
 
@@ -215,8 +270,6 @@ void ISE::makeGrid()
     grid.append(list);
   }
 }
-
-
 
 void ISE::createGameLayout(QHBoxLayout *x)
 {
@@ -245,28 +298,61 @@ void ISE::createGameLayout(QHBoxLayout *x)
 
 
 }
+void createNew()
+{
+
+}
+void login(QMainWindow *window)
+{
+      //working path
+  QString path( ISE::DataPath("configuration") + ".ini");
+
+  QFile file(path);
+  if(!file.exists())
+    createNew();
+
+  if(!file.open(QIODevice::ReadOnly| QIODevice::Text))
+    return;
+
+  //open  the profile settings
+  QSettings *settings = new QSettings(path, QSettings::IniFormat);
+
+  //Load Kraken Settings
+  settings->beginGroup("Settings");
+  QString user = settings->value("User").toString();
+  QString userPath = settings->value("Path").toString();
+  settings->endGroup();
+
+}
 
 void ISE::initialize(QApplication *application)
 {
 
 	//Create the window screen for the program
-	window = new QMainWindow();
-	window->resize(1300,800);
-	window->setStyleSheet("color: purple");
-	window->show();
+	window = new GameScreen();
+  window->resize(1000,1000);
+  window->showFullScreen();
 
-	//creating widget called container to hold game&score
-	QWidget *container = new QWidget();
 
-	//adding the larger container to the dock widget window
-	window->setCentralWidget(container);
+    //working path
+  QString path( DataPath("configuration") + ".ini");
 
-	//creating a layout to put scores 
-	QHBoxLayout *mainLayout = new QHBoxLayout();
-	container->setLayout(mainLayout);
-	createPlayerLayout(mainLayout);
-	createGameLayout(mainLayout);
-	makeGrid();
+  //soft catch
+  QFile file(path);
+
+  //Load in the bible xml
+  parseBible("C:\\Projects\\ISE\\docs\\esv.xml");
+
+  //show the initial dialog
+  QDialog *dialog = new QDialog(window,Qt::SplashScreen);
+  QHBoxLayout *layout = new QHBoxLayout;
+  dialog->setLayout(layout);
+  stack = new QStackedWidget(dialog);
+  layout->addWidget(stack);
+
+  stack->addWidget(new LoginScreen(stack));
+  stack->addWidget(new SearchScreen(stack));
+  dialog->show();
 
 }
 ISEEnd
