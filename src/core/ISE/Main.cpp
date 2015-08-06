@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
 	ISE *ourProgram = new ISE();
 	ourProgram->initialize(a);
 
-  ourProgram->popup();
 	// Execute the program.
 	return a->exec();
 }

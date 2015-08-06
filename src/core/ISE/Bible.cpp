@@ -7,6 +7,7 @@ ISEBegin
   Bible* Bible::instance = 0;
 
 Bible::Bible()
+
 {
 
 }
@@ -30,17 +31,11 @@ void Bible::load(QXmlStreamReader &xml)
       QString indicator = xml.attributes().value("n").toString();
       QString text;
       if(type == "b")
-      {
         currentBook = add(indicator);
-      }
       if(type == "c")
-      {
         currentChapter = currentBook->add(indicator);
-      }
       if(type == "v")
-      {
         currentChapter->add(indicator)->setText(xml.readElementText());
-      }
     }
   }
 }
@@ -49,19 +44,38 @@ QString Bible::find(const QString &book, const QString &chapter, const QString &
 {
   QString text;
   Book *foundBook = data.value(book, &defaultBook);
-  QList<Chapter*> chapters = foundBook->find(chapter);
-  foreach(Chapter* foundChapter, chapters)
+  QList<StructureType*> chapters = foundBook->find(chapter);
+  foreach(StructureType* foundChapter, chapters)
   {
-    QList<Verse*> verses = foundChapter->find(verse);
-    foreach(Verse* foundVerse, verses)
-      text.append(foundVerse->data);
+    QList<StructureType*> verses = foundChapter->find(verse);
+    foreach(StructureType* foundVerse, verses)
+      text.append(static_cast<Verse*>(foundVerse)->data);
   }
   return text;
 }
 
-Bible::~Bible()
+QList<StructureType*> StructureType::find(const QString &range) 
 {
+  if(range.isEmpty())
+    return data.values();
+  QList<StructureType*> chapters;
 
-}
+  //Setup
+  QStringList values = range.split("-");
+  int first = values.first().toInt();
+  int last = values.last().toInt();
+
+  //Loop
+  do
+  {
+    StructureType *chapter = data.value(QString::number(first));
+    if(chapter)
+      chapters.append(chapter);
+    first++;
+  }
+  while(first <= last);
+
+  return chapters;
+};
 
 ISEEnd

@@ -4,14 +4,21 @@
 #include "qfile.h"
 #include "qtextstream.h"
 ISEBegin
-	GameScreen::GameScreen()
-  : QMainWindow()
-{
+
+  void setStyles(GameScreen *screen)
+{  
   QFile file(ISE::DataPath("charcoal.txt"));
   if(!file.open(QIODevice::ReadOnly| QIODevice::Text))
     return;
   QTextStream in(&file);
-  setStyleSheet(in.readAll());
+  screen->setStyleSheet(in.readAll());
+
+}
+
+GameScreen::GameScreen()
+  : QMainWindow()
+{
+  setStyles(this);
 }
 
 

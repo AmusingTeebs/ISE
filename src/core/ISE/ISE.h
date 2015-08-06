@@ -15,9 +15,24 @@
 #include "qfile.h"
 #include "Bible.h"
 #include "qcombobox.h"
-
+#include "qformlayout.h"
+#include "GameScreen.h"
+#include "qdebug.h"
+#include "GameViewer.h"
 ISEBegin
   
+class Stack : public QStackedWidget
+{
+  Q_OBJECT
+public:
+  Stack(QWidget *widget) : QStackedWidget(widget) {}
+  void setCurrentIndex(int index);
+
+signals:
+  void finished();
+};
+
+
 class ISE : public QObject
 {
 
@@ -33,48 +48,32 @@ public:
   /** Initialize ISE! */
   void initialize(QApplication *application);
 
-  void ISE::makeButtons(QLayout *layout);
-
-  void popup();
-
   void parseBible(const QString &path);
 
   static QString DataPath(const QString &path);
+
   static QString isePath(const QString &path);
 
+
 private: 
-  void createPlayerLayout(QHBoxLayout *widget);
-
-  void createGameLayout(QHBoxLayout *widget);
-
-  QList<QToolButton*> buttons;
-
-  QLabel *firstLabel, *secondLabel;
 
   GameScreen *window;
 
-  int firstScore, secondScore, currentPlayer;
-
-  void makeGrid();
-
-  void evaluate();
-
-  QList< QList<QToolButton*> > grid;
+  GameViewer_space::GameViewer *viewer;
 
   QHash<QString,QString> verses;
 
-  QStackedWidget *stack;
+  Stack *stack;
 
   QTextEdit *result;
 
   QList<QWidget*> cache;
+
   public slots: 
 
     void findVerse();
 
     void start();
-
-    void changeImage();
 
 };
 
@@ -85,7 +84,7 @@ class LoginScreen : public QWidget
 
 public:
   /** Constructor */
-  LoginScreen(QStackedWidget *widget)
+  LoginScreen(Stack *widget)
   {
     stack = widget;
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -110,7 +109,7 @@ public:
     layout->addWidget(button);
   };
 
-  QStackedWidget *stack;
+  Stack *stack;
   /** Deconstructor */
   ~LoginScreen() {};
   private slots:
@@ -128,18 +127,49 @@ class SearchScreen : public QWidget
 
 public:
   /** Constructor */
-  SearchScreen(QStackedWidget *widget)
+  SearchScreen(Stack *widget)
   {
-    QList<Book*> books = Bible::Instance()->data.values();
+    stack = widget;
+    QHBoxLayout *hbox = new  QHBoxLayout(this);
+    QFormLayout *layout = new QFormLayout;
+    hbox->addLayout(layout);
+    //QList<Book*> books = Bible::Instance()->data.values();
+    //QComboBox *combo;
+    //combo = new QComboBox(this);
+    //foreach(Book* book, books)
+    //  combo->addItem(book->name);
+    //layout->addRow("Book",combo);
+    //    combo = new QComboBox(this);
+    //foreach(Book* book, books)
+    //  combo->addItem(book->name);
+    //layout->addRow("Beginning Chapter",combo);
+    //    combo = new QComboBox(this);
+    //foreach(Book* book, books)
+    //  combo->addItem(book->name);
+    //layout->addRow("Ending Chapter",combo);
+    //    combo = new QComboBox(this);
+    //foreach(Book* book, books)
+    //  combo->addItem(book->name);
+    //layout->addRow("Beginning Verse",combo);
+    //        combo = new QComboBox(this);
+    //foreach(Book* book, books)
+    //  combo->addItem(book->name);
+    //layout->addRow("Ending Verse",combo);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    QPushButton *button = new QPushButton("Start", this);
+    layout->addWidget(button);
+    connect(button,&QPushButton::clicked, this, &SearchScreen::next);
     QTextEdit *edit = new QTextEdit();
+    hbox->addWidget(edit);
     bool value = connect(edit,SIGNAL(textChanged()), this, SLOT(findVerse()));
-    layout->addWidget(edit);
+    hbox->addWidget(edit);
     result = new QTextEdit();
-    layout->addWidget(result);
+    hbox->addWidget(result);
+    hbox->addWidget(result);
 
   };
+
+
   ~SearchScreen() {};
 
   public slots:
@@ -154,9 +184,14 @@ public:
       return;
     result->setPlainText(Bible::Instance()->find(values.at(0), values.at(1), values.at(2)));
   }
+    private slots:
+    void next()
+    {
+      stack->setCurrentIndex(stack->currentIndex()+1);
+    };
 private: 
   QTextEdit *result;
-  QStackedWidget *stack;
+  Stack *stack;
   /** Deconstructor */
 
 

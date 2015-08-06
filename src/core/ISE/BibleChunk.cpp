@@ -11,6 +11,7 @@ void BibleChunk::load(const QString &value)
 {
   setPlainText(value);
 }
+
 BibleChunk::~BibleChunk()
 {
 

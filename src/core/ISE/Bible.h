@@ -6,8 +6,17 @@
 #include "qmap.h"
 ISEBegin
 
+  class StructureType
+  {
+  public:
+    StructureType(){};
 
-class Verse 
+    QList<StructureType*> find(const QString &range);
+
+      QMap<QString,StructureType*> data;
+  };
+
+class Verse : public StructureType
 {
   friend class Bible;
 public:
@@ -18,60 +27,26 @@ protected:
   QString data;
 };
 
-class Chapter 
+class Chapter : public StructureType
 {
   friend class Bible;
 public:
-  Chapter() {};
+  Chapter(const QString &_name= "") {name = _name;};
   Verse* add(const QString &key) { Verse *v = new Verse(); data.insert(key,v); return v;};
-  QList<Verse*> find(const QString &range) 
-  {
-    if(range.isEmpty())
-      return data.values();
-      QList<Verse*> verses;
-      QStringList values = range.split("-");
-      int first = values.first().toInt();
-      int last = values.last().toInt();
-      while(first <= last)
-      {
-        Verse *verse = data.value(QString::number(first));
-        if(verse)
-          verses.append(verse);
-        first++;
-      }
-      return verses;
-  };
-protected:
-  QMap<QString,Verse*> data;
+
+  QString name;
 };
 
-class Book 
+class Book : public StructureType
 {
   friend class Bible;
 public:
-  Book() {};
-  Chapter* add(const QString &key)  { Chapter *c = new Chapter(); data.insert(key,c); return c;};
+  Book(const QString &_name = "") {name = _name;};
+
+  Chapter* add(const QString &key)  { Chapter *c = new Chapter(key); data.insert(key,c); return c;};
  
-  QList<Chapter*> find(const QString &range) 
-    {
-      if(range.isEmpty())
-        return data.values();
-      QList<Chapter*> chapters;
-      QStringList values = range.split("-");
-      int first = values.first().toInt();
-      int last = values.last().toInt();
-      do
-      {
-        Chapter *chapter = data.value(QString::number(first));
-        if(chapter)
-          chapters.append(chapter);
-        first++;
-      }
-      while(first <= last);
-      return chapters;
-  };
-protected:
-  QMap<QString,Chapter*> data;
+  QString name;
+
 };
 
 class Bible 
@@ -82,22 +57,21 @@ public:
   /** Constructor */
   Bible();
 
-  Book* add(const QString &key) { Book *b = new Book(); data.insert(key,b); return b;};
+  Book* add(const QString &key) { Book *b = new Book(key); data.insert(key,b); return b;};
 
   QString find(const QString &book, const QString &chapter, const QString &verse);
 
   void load(QXmlStreamReader &reader);
 
-  /** Deconstructor */
-  ~Bible();
 
   static Bible* Instance();
-  static Bible* instance;
-  QMap<QString,Book*> data;
+
+private:
 
   Book defaultBook;
-  Chapter defaultChapter;
-  Verse defaultVerse;
 
+  static Bible* instance;
+
+  QMap<QString,Book*> data;
 };
 ISEEnd
