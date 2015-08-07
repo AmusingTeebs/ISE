@@ -3,6 +3,7 @@
 #include "ISE.h"
 #include "qfile.h"
 #include "qtextstream.h"
+#include "GameBar.h"
 ISEBegin
 
   void setStyles(GameScreen *screen)
@@ -19,6 +20,7 @@ GameScreen::GameScreen()
   : QMainWindow()
 {
   setStyles(this);
+  addToolBar(Qt::ToolBarArea::LeftToolBarArea,new GameBar());
 }
 
 

@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	QApplication *a = new QApplication(argc, argv);
 	//
 	// 1. initialize kraken through spectr
-	ISE *ourProgram = new ISE();
+	ISE *ourProgram = ISE::Instance();
 	ourProgram->initialize(a);
 
 	// Execute the program.

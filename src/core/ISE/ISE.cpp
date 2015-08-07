@@ -27,9 +27,20 @@
 #include "GameScreen.h"
 #include "qsettings.h"
 #include "qpushbutton.h"
+#include "BibleChunk.h"
+#include "qgraphicsproxywidget.h"
+
+
 using namespace GameViewer_space; // Ask me about this
 ISEBegin
+	ISE* ISE::instance = 0;
 
+ISE* ISE::Instance()
+{
+	if(!instance)
+		instance = new ISE();
+	return instance;
+}
   QString ISE::isePath(const QString &name)
 {
   // Get the executable location
@@ -38,6 +49,12 @@ ISEBegin
   dir.cdUp();
 
   return dir.absolutePath() + QDir::separator() + name;
+}
+
+QString ISE::imagesPath(const QString &name)
+{
+  QString sep = QDir::separator();
+  return isePath("images" + sep + name);
 }
 
 QString ISE::DataPath(const QString &name)
@@ -61,7 +78,8 @@ ISE::~ISE()
 void ISE::start()
 {  
   stack->close();
-  viewer->close();
+  dialog->close();
+  generateChunks("");
 }
 
 void ISE::findVerse()
@@ -69,10 +87,10 @@ void ISE::findVerse()
   QString text = dynamic_cast<QTextEdit*>(QObject::sender())->toPlainText();
   if(text.isEmpty())
     return;
-  QStringList values = text.split(" ");
-  if(values.size() < 3)
+  chosenValues = text.split(" ");
+  if(chosenValues.size() < 3)
     return;
-  result->setPlainText(Bible::Instance()->find(values.at(0), values.at(1), values.at(2)));
+  result->setPlainText(Bible::Instance()->findText(chosenValues.at(0), chosenValues.at(1), chosenValues.at(2)));
 }
 
 void ISE::parseBible(const QString &path)
@@ -84,6 +102,38 @@ void ISE::parseBible(const QString &path)
   QXmlStreamReader xml(&file);
 
   Bible::Instance()->load(xml);
+}
+void ISE::generateChunks(const QString &text)
+{
+	chosenValues = QStringList() << "Hebrews" << "1" << "";
+	if(chosenValues.isEmpty())
+		return;
+	QList<Verse*> verses = Bible::Instance()->findVerses(chosenValues.at(0), chosenValues.at(1), chosenValues.at(2));
+	int count = verses.count();
+	int rand = qrand() %3, counter = 0, total = 0;
+	while(total < verses.count())
+	{
+		BibleChunk *chunk = new BibleChunk();
+		if(total >= rand)
+		{
+			rand = qrand()%3;
+			rand += total;
+		}
+		for(total; total < rand; total++)
+		{
+			chunk->load(verses.at(total));
+		}
+		chunk->generatePieces();
+		foreach(Slot *item, chunk->holders)
+		{
+			viewer->addHolder(item);
+		}
+		foreach(Piece *item, chunk->pieces)
+		{
+			viewer->addCloud(item);
+		}
+	}
+
 }
 
 void createNew()
@@ -130,9 +180,9 @@ void ISE::initialize(QApplication *application)
 
   //Load in the bible xml
   parseBible("C:\\Projects\\ISE\\docs\\esv.xml");
-
+  //ha
   //show the initial dialog
-  QDialog *dialog = new QDialog(window,Qt::SplashScreen);
+ dialog = new QDialog(window,Qt::SplashScreen);
   QHBoxLayout *layout = new QHBoxLayout;
   dialog->setLayout(layout);
   stack = new Stack(dialog);
@@ -143,6 +193,8 @@ void ISE::initialize(QApplication *application)
   bool good = connect(stack, &Stack::finished, this,  &ISE::start);
   dialog->show();
   viewer = new GameViewer(window);
+  QGraphicsProxyWidget *item = viewer->scene()->addWidget(dialog);
+  item->setOpacity(.8);
   window->setCentralWidget(viewer);
 }
 

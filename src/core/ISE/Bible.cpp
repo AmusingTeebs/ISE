@@ -40,7 +40,7 @@ void Bible::load(QXmlStreamReader &xml)
   }
 }
 
-QString Bible::find(const QString &book, const QString &chapter, const QString &verse)
+QString Bible::findText(const QString &book, const QString &chapter, const QString &verse)
 {
   QString text;
   Book *foundBook = data.value(book, &defaultBook);
@@ -49,9 +49,26 @@ QString Bible::find(const QString &book, const QString &chapter, const QString &
   {
     QList<StructureType*> verses = foundChapter->find(verse);
     foreach(StructureType* foundVerse, verses)
-      text.append(static_cast<Verse*>(foundVerse)->data);
+	{
+	  Verse *v =static_cast<Verse*>(foundVerse);
+	  text.append(v->number + " " );
+      text.append(v->data);
+	}
   }
   return text;
+}
+QList<Verse*> Bible::findVerses(const QString &book, const QString &chapter, const QString &verse)
+{
+  QList<Verse*> foundVerses;
+  Book *foundBook = data.value(book, &defaultBook);
+  QList<StructureType*> chapters = foundBook->find(chapter);
+  foreach(StructureType* foundChapter, chapters)
+  {
+    QList<StructureType*> verses = foundChapter->find(verse);
+    foreach(StructureType* foundVerse, verses)
+	  foundVerses.append(static_cast<Verse*>(foundVerse));
+  }
+  return foundVerses;
 }
 
 QList<StructureType*> StructureType::find(const QString &range) 

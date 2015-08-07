@@ -52,11 +52,13 @@ public:
 
   static QString DataPath(const QString &path);
 
+  static QString imagesPath(const QString &path);
   static QString isePath(const QString &path);
 
+  static ISE* Instance();
+  void generateChunks(const QString &text);
 
-private: 
-
+	static ISE* instance;
   GameScreen *window;
 
   GameViewer_space::GameViewer *viewer;
@@ -67,8 +69,10 @@ private:
 
   QTextEdit *result;
 
+  QDialog *dialog;
   QList<QWidget*> cache;
 
+  QStringList chosenValues;
   public slots: 
 
     void findVerse();
@@ -182,7 +186,7 @@ public:
     QStringList values = text.split(" ");
     if(values.size() < 3)
       return;
-    result->setPlainText(Bible::Instance()->find(values.at(0), values.at(1), values.at(2)));
+    result->setPlainText(Bible::Instance()->findText(values.at(0), values.at(1), values.at(2)));
   }
     private slots:
     void next()

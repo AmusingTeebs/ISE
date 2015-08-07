@@ -6,7 +6,7 @@ project(ISE)
 
 # Find all of the Qt packages 
 ISEFindQt()
-  
+   
 # Add all header and source files to the project
 file(GLOB PROJECT_HEADERS *.h)  
 file(GLOB PROJECT_SOURCES *.cpp)  
