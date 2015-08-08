@@ -14,6 +14,8 @@ ISEBegin
     QList<StructureType*> find(const QString &range);
 
       QMap<QString,StructureType*> data;
+
+	  QString name;
   };
 
 class Verse : public StructureType
@@ -68,12 +70,13 @@ public:
 
   static Bible* Instance();
 
+  QMap<QString,Book*> data;
+
 private:
 
   Book defaultBook;
 
   static Bible* instance;
 
-  QMap<QString,Book*> data;
 };
 ISEEnd

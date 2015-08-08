@@ -4,6 +4,7 @@
 // Viewer
 #include "GameViewer.h"
 #include "Scroll.h"
+#include "GameOptions.h"
 
 //Interface junk
 #include "qmainwindow.h"
@@ -76,7 +77,7 @@ ISE::~ISE()
 }
 
 void ISE::start()
-{  
+{ 
   stack->close();
   dialog->close();
   generateChunks("");
@@ -180,28 +181,27 @@ void ISE::initialize(QApplication *application)
 
   //Load in the bible xml
   parseBible("C:\\Projects\\ISE\\docs\\esv.xml");
-  //ha
   //show the initial dialog
- dialog = new QDialog(window,Qt::SplashScreen);
-  QHBoxLayout *layout = new QHBoxLayout;
-  dialog->setLayout(layout);
-  stack = new Stack(dialog);
-  layout->addWidget(stack);
 
-  stack->addWidget(new LoginScreen(stack));
-  stack->addWidget(new SearchScreen(stack));
-  bool good = connect(stack, &Stack::finished, this,  &ISE::start);
-  dialog->show();
+
+  //Viewer
   viewer = new GameViewer(window);
+  window->setCentralWidget(viewer);
+
+  //Options screen
+  dialog = new QDialog(window,Qt::SplashScreen);
+  QHBoxLayout *layout = new QHBoxLayout(dialog);
+  stack = GameOptions::Instance();
+  layout->addWidget(stack);
+  connect(stack, &GameOptions::finished, this,  &ISE::start);
+  dialog->show();
   QGraphicsProxyWidget *item = viewer->scene()->addWidget(dialog);
   item->setOpacity(.8);
-  window->setCentralWidget(viewer);
+
+  //Search Screen
+  viewer->scene()->addItem(stack->searchScreen);
+  stack->searchScreen->moveBy(1000,200);
+
 }
 
-void Stack::setCurrentIndex(int index)
-{ 
-  QStackedWidget::setCurrentIndex(index);
-  if(index >= count())
-    emit finished();
-}
 ISEEnd

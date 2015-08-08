@@ -5,7 +5,7 @@ ISEConfig()
 project(ISE) 
 
 # Find all of the Qt packages 
-ISEFindQt()
+ISEFindQt() 
    
 # Add all header and source files to the project
 file(GLOB PROJECT_HEADERS *.h)  
