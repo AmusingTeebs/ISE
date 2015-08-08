@@ -20,12 +20,11 @@
 #include "GameScreen.h"
 #include "qdebug.h"
 #include "GameViewer.h"
-#include "GameOptions.h"
 #include "qlineedit.h"
-
+#include "qdialog.h"
 ISEBegin
 	class SearchScreen;
-class GameOptions : public QStackedWidget 
+class GameOptions : public QDialog 
 {
 	Q_OBJECT
 public:
@@ -36,6 +35,7 @@ public:
 
   static GameOptions* Instance();
 
+  QStackedWidget *stack; 
   static GameOptions *instance;
   /** Deconstructor */
   ~GameOptions();
@@ -100,7 +100,7 @@ public:
   private slots:
     void next()
     {
-      stack->setCurrentIndex(stack->currentIndex()+1);
+		stack->setCurrentIndex(stack->stack->currentIndex()+1);
     };
 
 };
@@ -115,18 +115,9 @@ public:
 
   ~SearchScreen() {};
 
+	void findText();
 
-
-  /*void findVerse()
-  {
-    QString text = dynamic_cast<QTextEdit*>(QObject::sender())->toPlainText();
-    if(text.isEmpty())
-      return;
-    QStringList values = text.split(" ");
-    if(values.size() < 3)
-      return;
-    result->setPlainText(Bible::Instance()->findText(values.at(0), values.at(1), values.at(2)));
-  }*/
+	GameOptions *options;
 
   public slots:
 	  void currentIndexChanged(int index);

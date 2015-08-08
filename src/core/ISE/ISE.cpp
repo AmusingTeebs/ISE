@@ -78,7 +78,6 @@ ISE::~ISE()
 
 void ISE::start()
 { 
-  stack->close();
   dialog->close();
   generateChunks("");
 }
@@ -189,18 +188,16 @@ void ISE::initialize(QApplication *application)
   window->setCentralWidget(viewer);
 
   //Options screen
-  dialog = new QDialog(window,Qt::SplashScreen);
-  QHBoxLayout *layout = new QHBoxLayout(dialog);
-  stack = GameOptions::Instance();
-  layout->addWidget(stack);
-  connect(stack, &GameOptions::finished, this,  &ISE::start);
+  dialog = GameOptions::Instance();
+
+  //connect(stack, &GameOptions::finished, this,  &ISE::start);
   dialog->show();
   QGraphicsProxyWidget *item = viewer->scene()->addWidget(dialog);
   item->setOpacity(.8);
 
   //Search Screen
-  viewer->scene()->addItem(stack->searchScreen);
-  stack->searchScreen->moveBy(1000,200);
+  viewer->scene()->addItem(dialog->searchScreen);
+  dialog->searchScreen->moveBy(1000,200);
 
 }
 

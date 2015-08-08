@@ -4,6 +4,7 @@
 #include "qtextedit.h"
 #include <QXmlStreamReader>
 #include "qmap.h"
+#include "qdebug.h"
 ISEBegin
 
   class StructureType
@@ -34,10 +35,9 @@ class Chapter : public StructureType
 {
   friend class Bible;
 public:
-  Chapter(const QString &_name= "") {name = _name;};
+  Chapter(const QString &_name= "") {name = _name; qDebug() << name;};
   Verse* add(const QString &key) { Verse *v = new Verse(key); data.insert(key,v); return v;};
 
-  QString name;
 };
 
 class Book : public StructureType
@@ -48,7 +48,6 @@ public:
 
   Chapter* add(const QString &key)  { Chapter *c = new Chapter(key); data.insert(key,c); return c;};
  
-  QString name;
 
 };
 

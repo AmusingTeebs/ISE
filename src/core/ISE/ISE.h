@@ -54,11 +54,10 @@ public:
 
   QHash<QString,QString> verses;
 
-  GameOptions *stack;
 
   QTextEdit *result;
 
-  QDialog *dialog;
+  GameOptions *dialog;
   QList<QWidget*> cache;
 
   QStringList chosenValues;
